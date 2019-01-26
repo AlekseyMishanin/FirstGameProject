@@ -1,6 +1,7 @@
 package ru.mishanin.game.math;
 
 import com.badlogic.gdx.math.Vector2;
+import lombok.NonNull;
 
 /**
  * Класс прямоугольника, описывающего резмеры тела игрового объекта
@@ -14,7 +15,7 @@ public class RectBody {
 
     public RectBody(){}
 
-    public RectBody(RectBody from){
+    public RectBody(@NonNull RectBody from){
         this(from.getX(), from.getY(), from.getHalfWidth(), from.getHalfHeight());
     }
 
@@ -35,6 +36,7 @@ public class RectBody {
     public void setPos(float x, float y){
         pos.set(x,y);
     }
+    public Vector2 getPos() { return pos; }
 
     public float getHalfHeight() {
         return halfHeight;

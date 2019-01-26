@@ -1,9 +1,9 @@
 package ru.mishanin.game.screen;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import lombok.NonNull;
 import ru.mishanin.game.MyFirstGame;
 import ru.mishanin.game.base.Base2DScreen;
 
@@ -27,12 +27,11 @@ public class GameScreen extends Base2DScreen {
      * Конструктор
      * @param game - ссылка на объект типа MyFirstGame
      * */
-    public GameScreen(MyFirstGame game) {
-
+    public GameScreen(@NonNull MyFirstGame game) {
         super(game);
         this.endpoint = new Vector2();
         img = new Texture("badlogic.jpg");
-        fon = new Texture("gameFon.jpg");
+        fon = new Texture("textures/gameFon.jpg");
 
         pos = new Vector2(-0.5f,-0.5f);
         speed = new Vector2(0.001f,0.001f);
@@ -72,8 +71,6 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        System.out.println(width+" "+height);
-        System.out.println(Gdx.graphics.getWidth()+" "+Gdx.graphics.getHeight());
     }
 
     @Override
@@ -124,7 +121,8 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        endpoint.set(screenX,screenBounds.getHeight()-screenY).mul(screenToWorlds);
+        super.touchUp(screenX, screenY, pointer, button);
+        endpoint.set(getTouch());
         updatePosEndVector2();
         return false;
     }

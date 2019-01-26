@@ -9,17 +9,17 @@ buildscript {
         jcenter()
         google()
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
-        
 
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath "io.franzbecker:gradle-lombok:1.14" //добавил путь к плагину lombok
     }
 }
 
 allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
-
+    
     version = '1.0'
     ext {
         appName = "MyFirstGame"
@@ -70,7 +70,7 @@ project(":android") {
 
 project(":core") {
     apply plugin: "java"
-
+    apply plugin: "io.franzbecker.gradle-lombok" //подключил плагин lombok
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"

@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+
+import lombok.Getter;
 import ru.mishanin.game.MyFirstGame;
 import ru.mishanin.game.math.MatrixUtils;
 import ru.mishanin.game.math.RectBody;
@@ -14,14 +16,16 @@ import ru.mishanin.game.math.RectBody;
  * Базовый класс экрана
  * @author Mishanin Aleksey
  * */
-public class Base2DScreen implements Screen, InputProcessor {
 
-    protected RectBody screenBounds;  //границы области рисования в пикселях
-    protected RectBody worldBounds;   //границы проекции мировых координат
-    protected RectBody gldBounds;     //дефолтные границы gl
+@Getter
+public abstract class Base2DScreen implements Screen, InputProcessor {
 
-    protected Matrix4 worldToGL;
-    protected Matrix3 screenToWorlds;
+    private RectBody screenBounds;  //границы области рисования в пикселях
+    private RectBody worldBounds;   //границы проекции мировых координат
+    private RectBody gldBounds;     //дефолтные границы gl
+
+    private Matrix4 worldToGL;
+    private Matrix3 screenToWorlds;
 
     private Vector2 touch;
 
@@ -39,7 +43,7 @@ public class Base2DScreen implements Screen, InputProcessor {
         touch = new Vector2();
     }
 
-    public Base2DScreen(MyFirstGame game) {
+    public Base2DScreen( MyFirstGame game) {
         this();
         this.game = game;
     }
@@ -51,6 +55,9 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+    }
+
+    public void resize(RectBody worldBounds) {
 
     }
 
@@ -68,16 +75,15 @@ public class Base2DScreen implements Screen, InputProcessor {
         MatrixUtils.calcTransformMatrix(worldToGL, worldBounds, gldBounds);
         game.getBatch().setProjectionMatrix(worldToGL);
         MatrixUtils.calcTransformMatrix(screenToWorlds, screenBounds, worldBounds);
+        resize(worldBounds);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
@@ -87,7 +93,6 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-
     }
 
     @Override
@@ -108,6 +113,7 @@ public class Base2DScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         touch.set(screenX,screenBounds.getHeight()-screenY).mul(screenToWorlds);
+        touchDown(touch, pointer);
         return false;
     }
 
@@ -117,6 +123,12 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        touch.set(screenX,screenBounds.getHeight()-screenY).mul(screenToWorlds);
+        touchUp(touch, pointer);
+        return false;
+    }
+
+    public boolean touchUp(Vector2 touch, int pointer) {
         return false;
     }
 
@@ -134,6 +146,5 @@ public class Base2DScreen implements Screen, InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
-
 
 }

@@ -1,11 +1,14 @@
 package ru.mishanin.game.base;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import ru.mishanin.game.MyFirstGame;
+import ru.mishanin.game.math.MatrixUtils;
+import ru.mishanin.game.math.RectBody;
 
 /**
  * Базовый класс экрана
@@ -13,18 +16,32 @@ import com.badlogic.gdx.math.Vector2;
  * */
 public class Base2DScreen implements Screen, InputProcessor {
 
-    protected Vector2 endpoint;         //координаты конечной точки
-    protected Rectangle rectangle;      //размер игрового объекта
-    private boolean flagNewTouch;       //флаг подтверждающий наступление события движения игрового объекта
-    protected int step = 10;            //шаг движения при нажатии клавишы направления
+    protected RectBody screenBounds;  //границы области рисования в пикселях
+    protected RectBody worldBounds;   //границы проекции мировых координат
+    protected RectBody gldBounds;     //дефолтные границы gl
+
+    protected Matrix4 worldToGL;
+    protected Matrix3 screenToWorlds;
+
+    private Vector2 touch;
+
+    protected MyFirstGame game;   //ссылка на объект типа MyFirstGame
 
     /**
      * Конструктор по умолчанию для инициализации объектов
      * */
     public Base2DScreen() {
-        this.endpoint = new Vector2();
-        this.flagNewTouch = false;
-        this.rectangle = new Rectangle();
+        screenBounds = new RectBody();
+        worldBounds = new RectBody();
+        gldBounds = new RectBody(0f,0f,1f,1f);
+        worldToGL = new Matrix4();
+        screenToWorlds = new Matrix3();
+        touch = new Vector2();
+    }
+
+    public Base2DScreen(MyFirstGame game) {
+        this();
+        this.game = game;
     }
 
     @Override
@@ -39,7 +56,18 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void resize(int width, int height) {
+        screenBounds.setSize(width, height);
+        screenBounds.setLeft(0);
+        screenBounds.setBottom(0);
 
+        float aspect = width/(float)height;
+
+        worldBounds.setHeight(1f);
+        worldBounds.setWidth(1f*aspect);
+
+        MatrixUtils.calcTransformMatrix(worldToGL, worldBounds, gldBounds);
+        game.getBatch().setProjectionMatrix(worldToGL);
+        MatrixUtils.calcTransformMatrix(screenToWorlds, screenBounds, worldBounds);
     }
 
     @Override
@@ -69,40 +97,6 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        switch (keycode){
-            case Input.Keys.LEFT:
-                //если координата х конечной точки равна 0 - завершаем обработку
-                if(endpoint.x==0) break;
-                //перемещаем игровой объект на шаг влево
-                endpoint.x-=(endpoint.x < step ? endpoint.x : step);
-                //сообщаем о том, что произошло событие движения игрового объекта
-                this.flagNewTouch = true;
-                break;
-            case Input.Keys.RIGHT:
-                //если координата (х+ширина игрового объета) конечной точки равна ширине игрового экрана - завершаем обработку
-                if((endpoint.x+rectangle.getWidth())==Gdx.graphics.getWidth()) break;
-                //перемещаем игровой объекта на шаг вправо
-                endpoint.x+=((endpoint.x+rectangle.getWidth()+step) > Gdx.graphics.getWidth() ? Gdx.graphics.getWidth()-endpoint.x-rectangle.getWidth() : step);
-                //сообщаем о том, что произошло событие движения игрового объекта
-                this.flagNewTouch = true;
-                break;
-            case Input.Keys.UP:
-                //если координата (у+высота игрового объета) конечной точки равна высоте игрового экрана - завершаем обработку
-                if((endpoint.y+rectangle.getHeight())==Gdx.graphics.getHeight()) break;
-                //перемещаем игровой объекта на шаг вверх
-                endpoint.y+=((endpoint.y+rectangle.getHeight()+step) > Gdx.graphics.getHeight() ? Gdx.graphics.getHeight()-endpoint.y-rectangle.getHeight() : step);
-                //сообщаем о том, что произошло событие движения игрового объекта
-                this.flagNewTouch = true;
-                break;
-            case Input.Keys.DOWN:
-                //если координата у конечной точки равна 0 - завершаем обработку
-                if(endpoint.y==0) break;
-                //перемещаем игровой объекта на шаг вниз
-                endpoint.y-=(endpoint.y < step ? endpoint.y : step);
-                //сообщаем о том, что произошло событие движения игрового объекта
-                this.flagNewTouch = true;
-                break;
-        }
         return false;
     }
 
@@ -113,14 +107,16 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        touch.set(screenX,screenBounds.getHeight()-screenY).mul(screenToWorlds);
+        return false;
+    }
+
+    public boolean touchDown(Vector2 touch, int pointer) {
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        endpoint.x=screenX;                             //присваиваем конеыной точке новое значение х
-        endpoint.y=Gdx.graphics.getHeight()-screenY;    //присваиваем конеыной точке новое значение у
-        flagNewTouch = true;                            //сообщаем о том, что произошло событие движения игрового объекта
         return false;
     }
 
@@ -139,11 +135,5 @@ public class Base2DScreen implements Screen, InputProcessor {
         return false;
     }
 
-    public boolean isFlagNewTouch() {
-        return flagNewTouch;
-    }
 
-    public void setFlagNewTouch(boolean flagNewTouch) {
-        this.flagNewTouch = flagNewTouch;
-    }
 }

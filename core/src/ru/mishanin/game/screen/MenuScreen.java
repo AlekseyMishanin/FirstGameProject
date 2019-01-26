@@ -12,7 +12,6 @@ import ru.mishanin.game.base.Base2DScreen;
  * */
 public class MenuScreen extends Base2DScreen {
 
-    private MyFirstGame game;   //ссылка на объект типа MyFirstGame
     private Texture fon;        //текстура фона
     private Music spaceMusic;   //фоновая музыка
 
@@ -20,9 +19,8 @@ public class MenuScreen extends Base2DScreen {
      * Конструктор
      * @param game - ссылка на объект типа MyFirstGame
      * */
-    public MenuScreen(MyFirstGame game) {
-        this.game = game;
-    }
+
+    public MenuScreen(MyFirstGame game) { super(game);}
 
     @Override
     public void show() {
@@ -39,8 +37,8 @@ public class MenuScreen extends Base2DScreen {
 
         game.setBackgroundSprite(fon);  //загружаем текстуру для нового фона
         // настройка размеров и позиции спрайта заднего фона
-        game.getBackgroundSprite().setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        game.getBackgroundSprite().setPosition(0f,0f);
+        game.getBackgroundSprite().setSize(1f, 1f);
+        game.getBackgroundSprite().setPosition(-0.5f,-0.5f);
     }
 
     @Override
@@ -48,7 +46,7 @@ public class MenuScreen extends Base2DScreen {
         super.render(delta);
         game.getBatch().begin();
         game.getBackgroundSprite().draw(game.getBatch());     //прорисовываем фон
-        game.getFont().draw(game.getBatch(), "Click to start game!!! ", 100, 200);  //выводим текст на экран
+        game.getFont().draw(game.getBatch(), "Click to start game!!! ", -0f, 0f);  //выводим текст на экран
         game.getBatch().end();
         //если пользователь кликнул мышкой или ткнул пальцем - закрываем экран меню и загрузаем основной экран игры
         if (Gdx.input.isTouched()) {

@@ -10,7 +10,6 @@ import lombok.NonNull;
 import ru.mishanin.game.MyFirstGame;
 import ru.mishanin.game.base.Base2DScreen;
 import ru.mishanin.game.math.RectBody;
-import ru.mishanin.game.sprite.Background;
 import ru.mishanin.game.sprite.Star;
 import ru.mishanin.game.sprite.menu.ExitButton;
 import ru.mishanin.game.sprite.menu.PlayButton;
@@ -23,7 +22,6 @@ public class MenuScreen extends Base2DScreen {
 
     private Texture bg;                 //текстура фона
     private Music spaceMusic;           //фоновая музыка
-    private Background background;      //фоновый рисуно
     private Star[] star;                //массив звезд
     private PlayButton playButton;      //кнопка play
     private ExitButton exitButton;      //кнопка exit
@@ -37,7 +35,7 @@ public class MenuScreen extends Base2DScreen {
     public MenuScreen(@NonNull MyFirstGame game) {
         super(game);
         bg = new Texture("textures/menuFon.jpg");
-        background = new Background(new TextureRegion(bg));
+        game.getBackground().setRegion(new TextureRegion(bg));
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
         star = new Star[256];
         for (int i =0;i< star.length; i++) {
@@ -52,19 +50,12 @@ public class MenuScreen extends Base2DScreen {
         super.show();
 
         //загрузка фоновой музыки
-        spaceMusic = Gdx.audio.newMusic(Gdx.files.internal("space.mp3"));
+        spaceMusic = Gdx.audio.newMusic(Gdx.files.internal("music/space.mp3"));
         //устанавливаем бесконечное повторение музыки
         spaceMusic.setLooping(true);
         //воспроизводим музыку
         spaceMusic.play();
 
-        //старый кусок кода
-        /*
-        game.setBackgroundSprite(bg);  //загружаем текстуру для нового фона
-        // настройка размеров и позиции спрайта заднего фона
-        game.getBackgroundSprite().setSize(1f, 1f);
-        game.getBackgroundSprite().setPosition(-0.5f,-0.5f);
-        */
     }
 
     public void update(float delta){
@@ -74,7 +65,7 @@ public class MenuScreen extends Base2DScreen {
     }
     public void draw(){
         game.getBatch().begin();
-        background.draw(game.getBatch());
+        game.getBackground().draw(game.getBatch());
         playButton.draw(game.getBatch());
         exitButton.draw(game.getBatch());
         for (Star s: star) {
@@ -84,7 +75,7 @@ public class MenuScreen extends Base2DScreen {
     }
     @Override
     public void resize(RectBody worldBounds) {
-        background.resize(worldBounds);
+        game.getBackground().resize(worldBounds);
         playButton.resize(worldBounds);
         exitButton.resize(worldBounds);
         for (Star s: star) {

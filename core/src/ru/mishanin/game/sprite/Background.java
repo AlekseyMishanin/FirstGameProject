@@ -11,6 +11,8 @@ public class Background extends Sprite {
         super(region);
     }
 
+    public Background() {}
+
     @Override
     public void resize(RectBody worldBounds) {
         super.resize(worldBounds);

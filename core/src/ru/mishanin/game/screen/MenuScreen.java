@@ -3,8 +3,17 @@ package ru.mishanin.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import lombok.NonNull;
 import ru.mishanin.game.MyFirstGame;
 import ru.mishanin.game.base.Base2DScreen;
+import ru.mishanin.game.math.RectBody;
+import ru.mishanin.game.sprite.Background;
+import ru.mishanin.game.sprite.Star;
+import ru.mishanin.game.sprite.menu.ExitButton;
+import ru.mishanin.game.sprite.menu.PlayButton;
 
 /**
  * Класс главного меню игры
@@ -12,21 +21,35 @@ import ru.mishanin.game.base.Base2DScreen;
  * */
 public class MenuScreen extends Base2DScreen {
 
-    private Texture fon;        //текстура фона
-    private Music spaceMusic;   //фоновая музыка
+    private Texture bg;                 //текстура фона
+    private Music spaceMusic;           //фоновая музыка
+    private Background background;      //фоновый рисуно
+    private Star[] star;                //массив звезд
+    private PlayButton playButton;      //кнопка play
+    private ExitButton exitButton;      //кнопка exit
+    private TextureAtlas atlas;         //атлас текстур
 
     /**
      * Конструктор
      * @param game - ссылка на объект типа MyFirstGame
      * */
 
-    public MenuScreen(MyFirstGame game) { super(game);}
+    public MenuScreen(@NonNull MyFirstGame game) {
+        super(game);
+        bg = new Texture("textures/menuFon.jpg");
+        background = new Background(new TextureRegion(bg));
+        atlas = new TextureAtlas("textures/menuAtlas.tpack");
+        star = new Star[256];
+        for (int i =0;i< star.length; i++) {
+            star[i] = new Star(atlas);
+        }
+        playButton = new PlayButton(atlas, this);
+        exitButton = new ExitButton(atlas);
+    }
 
     @Override
     public void show() {
         super.show();
-
-        fon = new Texture("menuFon.jpg");
 
         //загрузка фоновой музыки
         spaceMusic = Gdx.audio.newMusic(Gdx.files.internal("space.mp3"));
@@ -35,24 +58,46 @@ public class MenuScreen extends Base2DScreen {
         //воспроизводим музыку
         spaceMusic.play();
 
-        game.setBackgroundSprite(fon);  //загружаем текстуру для нового фона
+        //старый кусок кода
+        /*
+        game.setBackgroundSprite(bg);  //загружаем текстуру для нового фона
         // настройка размеров и позиции спрайта заднего фона
         game.getBackgroundSprite().setSize(1f, 1f);
         game.getBackgroundSprite().setPosition(-0.5f,-0.5f);
+        */
+    }
+
+    public void update(float delta){
+        for (Star s: star) {
+            s.update(delta);
+        }
+    }
+    public void draw(){
+        game.getBatch().begin();
+        background.draw(game.getBatch());
+        playButton.draw(game.getBatch());
+        exitButton.draw(game.getBatch());
+        for (Star s: star) {
+            s.draw(game.getBatch());
+        }
+        game.getBatch().end();
+    }
+    @Override
+    public void resize(RectBody worldBounds) {
+        background.resize(worldBounds);
+        playButton.resize(worldBounds);
+        exitButton.resize(worldBounds);
+        for (Star s: star) {
+            s.resize(worldBounds);
+        }
+        super.resize(worldBounds);
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
-        game.getBatch().begin();
-        game.getBackgroundSprite().draw(game.getBatch());     //прорисовываем фон
-        game.getFont().draw(game.getBatch(), "Click to start game!!! ", -0f, 0f);  //выводим текст на экран
-        game.getBatch().end();
-        //если пользователь кликнул мышкой или ткнул пальцем - закрываем экран меню и загрузаем основной экран игры
-        if (Gdx.input.isTouched()) {
-            game.setScreen(new GameScreen(game));
-            this.dispose();
-        }
+        update(delta);
+        draw();
     }
 
     @Override
@@ -61,9 +106,26 @@ public class MenuScreen extends Base2DScreen {
     }
 
     @Override
+    public boolean touchDown(Vector2 touch, int pointer) {
+        super.touchDown(touch, pointer);
+        playButton.touchDown(touch, pointer);
+        exitButton.touchDown(touch, pointer);
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        super.touchUp(touch, pointer);
+        playButton.touchUp(touch, pointer);
+        exitButton.touchUp(touch, pointer);
+        return false;
+    }
+
+    @Override
     public void dispose() {
-        fon.dispose();
+        bg.dispose();
         spaceMusic.dispose();
+        atlas.dispose();
         super.dispose();
     }
 }

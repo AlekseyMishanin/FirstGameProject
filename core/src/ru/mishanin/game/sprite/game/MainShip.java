@@ -40,11 +40,13 @@ public class MainShip extends Sprite {
     @Override
     public void update(float delta) {
         super.update(delta);
+        if(isPressedLeft||isPressedRight||isTouchLeft||isTouchRight||isTouchDragged){   //небольшая оптимизация, чтобы нижеуказанная проверка производилась только при наступлении одного из событий
         if((!isPressedLeft&&!isTouchLeft&&(getX()+getHalfHeight())<getWorldBounds().getHalfWidth())||      //проверяем не выходит ли корабль за правую границу
                 (!isPressedRight&&!isTouchRight&&(getX()-getHalfHeight())>(-1.0f)*getWorldBounds().getHalfWidth())||    //проверяем не выходит ли корабль за левую границу
                 (isTouchDragged&&isInternal(getWorldBounds())) //проверяем не выходит ли корабль за границы во время события touchDragger
                     )
             getPos().mulAdd(speed,delta);
+        }
     }
 
     public boolean keyDown(int keycode) {

@@ -99,6 +99,15 @@ public class RectBody {
         return getLeft()>other.getRight() || getRight()<other.getLeft() || getBottom()>other.getTop() || getTop()<other.getBottom();
     }
 
+    /**
+     * Метод проверяет нахождения границ прямоугольника внутри границ объекта other
+     * @param other - обрамляющий объект
+     * @return - true если объект находится в границах other, иначе - false
+     * */
+    public boolean isInternal(RectBody other){
+        return getLeft()>other.getLeft() && getRight()<other.getRight() && getBottom()>other.getBottom() && getTop()<other.getTop();
+    }
+
     @Override
     public String toString(){
         return "RectBody: pos " + pos + ", size(" + getWidth() + ", " + getHeight() + ")";

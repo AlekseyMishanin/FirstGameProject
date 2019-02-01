@@ -134,6 +134,12 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        touch.set(screenX,screenBounds.getHeight()-screenY).mul(screenToWorlds);
+        touchDragged(touch, pointer);
+        return false;
+    }
+
+    public boolean touchDragged(Vector2 touch, int pointer) {
         return false;
     }
 

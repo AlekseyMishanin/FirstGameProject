@@ -36,7 +36,7 @@ public class PlayButton extends  ScaledButton {
     @Override
     public void resize(RectBody worlBounds) {
         super.resize(worlBounds);
-        setPos(0f,0f);
+        setPos(worlBounds.getX(),worlBounds.getY());
     }
 
     @Override

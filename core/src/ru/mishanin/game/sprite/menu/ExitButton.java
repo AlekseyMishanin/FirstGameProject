@@ -1,5 +1,6 @@
 package ru.mishanin.game.sprite.menu;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import ru.mishanin.game.math.RectBody;
 
@@ -17,12 +18,13 @@ public class ExitButton extends ScaledButton {
     @Override
     public void action() {
         //некрасиво выходим из игры
-        System.exit(0);
+        //System.exit(0);
+        Gdx.app.exit();
     }
 
     @Override
     public void resize(RectBody worlBounds) {
         super.resize(worlBounds);
-        setPos(0.35f,0.35f);
+        setPos(worlBounds.getX()+0.35f,worlBounds.getY()+0.35f);
     }
 }

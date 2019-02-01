@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import ru.mishanin.game.math.RectBody;
+import ru.mishanin.game.utils.Regions;
 
 @Getter
 @Setter
@@ -16,8 +17,21 @@ public class Sprite extends RectBody {
     private float scale = 1f;     //для маштабирования объекта
     private TextureRegion[] regions;  //массив регионов
     private int frame;            //номер текущего кадра
+    private boolean isDestroyed;
+    private RectBody worldBounds;
 
     public Sprite(@NonNull TextureRegion region) {
+        regions = new TextureRegion[1];
+        regions[0] = region;
+    }
+
+    public Sprite(@NonNull TextureRegion region, int rows, int cols, int frames) {
+        this.regions = Regions.split(region,rows,cols,frames);
+    }
+
+    public Sprite() {}
+
+    public void setRegion(@NonNull TextureRegion region) {
         regions = new TextureRegion[1];
         regions[0] = region;
     }
@@ -34,7 +48,7 @@ public class Sprite extends RectBody {
     }
 
     public void resize(RectBody worlBounds){
-
+        this.worldBounds = worlBounds;
     }
 
     public void update(float delta){
@@ -50,7 +64,9 @@ public class Sprite extends RectBody {
 
     public void setHeightProportion(float height){
         setHeight(height);
-        float aspect = regions[frame].getRegionWidth()/regions[frame].getRegionHeight();
+        float aspect = regions[frame].getRegionWidth()/(float)regions[frame].getRegionHeight();
         setWidth(height*aspect);
     }
 }
+
+

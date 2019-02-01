@@ -42,7 +42,7 @@ public class Enemy extends Ship {
             int hp,
             RectBody worlBounds
     ){
-        this.regions = regions;
+        setRegions(regions);
         speed0.set(v0);
         this.bulletRegion=bulletRegion;
         this.bulletHeight=bulletHeight;

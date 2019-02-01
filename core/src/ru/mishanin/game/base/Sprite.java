@@ -15,8 +15,8 @@ public class Sprite extends RectBody {
 
     private float angle;          //угол поворота объекта
     private float scale = 1f;     //для маштабирования объекта
-    public TextureRegion[] regions;  //массив регионов
-    public int frame;            //номер текущего кадра
+    private TextureRegion[] regions;  //массив регионов
+    private int frame;            //номер текущего кадра
     private boolean isDestroyed;
     private RectBody worldBounds;
 

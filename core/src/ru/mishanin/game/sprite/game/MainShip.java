@@ -2,33 +2,33 @@ package ru.mishanin.game.sprite.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import ru.mishanin.game.base.Sprite;
 import ru.mishanin.game.math.RectBody;
 import ru.mishanin.game.pool.BulletPool;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
 
     private static final Vector2 CONS_V = new Vector2(0.5f, 0f);          //константа скорости
-    private Vector2 speed = new Vector2();                                      //буфер под скорость
     private boolean isPressedLeft;                                              //флаг нажатия клавиши левой стороны
     private boolean isPressedRight;                                             //флаг нажатия клавиши правой стороны
     private boolean isTouchLeft;                                                //флаг нажатия тача левой стороны
     private boolean isTouchRight;                                               //флаг нажатия тача правой стороны
     private boolean isTouchDragged;                                             //флаг нажатия тача и непрерывного движения из стороны в сторону
-    private BulletPool bulletPool;                                              //пул пуль
-    private TextureRegion bulletRegion;                                         //текстура пули
-    private Sound shotSound;                                                    //звук выстрела
+
+
 
     public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"),1,2,2);
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         this.bulletPool = bulletPool;
         setHeightProportion(0.15f);
-        shotSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shot.mp3"));
+        this.shotSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shot.wav"));
+        this.bulletV = new Vector2(0f,0.5f);
+        this.bulletHeight = 0.01f;
+        this.damage = 1;
+        this.reloadInterval = 0.2f;
+        this.hp = 100;
     }
 
     @Override
@@ -40,6 +40,11 @@ public class MainShip extends Sprite {
     @Override
     public void update(float delta) {
         super.update(delta);
+        this.reloadTimer += delta;
+        if(reloadTimer>=reloadInterval){
+            reloadTimer=0f;
+            shoot();
+        }
         if(isPressedLeft||isPressedRight||isTouchLeft||isTouchRight||isTouchDragged){   //небольшая оптимизация, чтобы нижеуказанная проверка производилась только при наступлении одного из событий
         if((!isPressedLeft&&!isTouchLeft&&(getX()+getHalfHeight())<getWorldBounds().getHalfWidth())||      //проверяем не выходит ли корабль за правую границу
                 (!isPressedRight&&!isTouchRight&&(getX()-getHalfHeight())>(-1.0f)*getWorldBounds().getHalfWidth())||    //проверяем не выходит ли корабль за левую границу
@@ -131,12 +136,6 @@ public class MainShip extends Sprite {
 
     private void stop(){
         speed.setZero();
-    }
-
-    private void shoot(){
-        Bullet bullet = bulletPool.obtain();
-        bullet.set(this,bulletRegion, getPos(), new Vector2(0f,0.5f), 0.01f,getWorldBounds(),1);
-        shotSound.play();
     }
 
     public void dispose(){

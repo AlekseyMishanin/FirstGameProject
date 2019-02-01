@@ -20,9 +20,8 @@ public class Regions {
         int frame = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-
                 regions[frame] = new TextureRegion(region, Width * j, Height * i, Width, Height);
-                if(frame == frames - 1) return regions;
+                if(frame == frames - 1) {return regions;}
                 frame++;
             }
         }

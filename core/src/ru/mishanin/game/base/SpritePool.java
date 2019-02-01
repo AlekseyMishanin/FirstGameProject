@@ -9,8 +9,8 @@ import java.util.List;
 @Getter
 public abstract class SpritePool<T extends Sprite> {
 
-    private List<T> activObjects = new ArrayList<T>();
-    private List<T> freeObjecks = new ArrayList<T>();
+    public List<T> activObjects = new ArrayList<T>();
+    public List<T> freeObjecks = new ArrayList<T>();
 
     protected abstract T newObject();
 

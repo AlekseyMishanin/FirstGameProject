@@ -12,8 +12,12 @@ import ru.mishanin.game.MyFirstGame;
 import ru.mishanin.game.base.Base2DScreen;
 import ru.mishanin.game.math.RectBody;
 import ru.mishanin.game.pool.BulletPool;
+import ru.mishanin.game.pool.EnemyPool;
+import ru.mishanin.game.pool.ExplosionPool;
 import ru.mishanin.game.sprite.Star;
+import ru.mishanin.game.sprite.game.Explosion;
 import ru.mishanin.game.sprite.game.MainShip;
+import ru.mishanin.game.utils.EnemyEmitter;
 
 /**
  * Класс основного экрана игры
@@ -25,11 +29,13 @@ public class GameScreen extends Base2DScreen {
 
     private Music warMusic;            //фоновая музыка
 
-
     private TextureAtlas atlas;         //атлас текстур
     private Star[] star;                //массив звезд
     private MainShip mainShip;          //объект корабля игрока
     private BulletPool bulletPool;
+    private ExplosionPool explosionPool;
+    private EnemyPool enemyPool;
+    private EnemyEmitter enemyEmitter;
 
     /**
      * Конструктор
@@ -51,6 +57,9 @@ public class GameScreen extends Base2DScreen {
             star[i] = new Star(atlas);
         }
         bulletPool = new BulletPool();
+        explosionPool = new ExplosionPool(atlas);
+        enemyPool = new EnemyPool(bulletPool);
+        enemyEmitter = new EnemyEmitter(atlas,enemyPool,getWorldBounds());
         mainShip = new MainShip(atlas, bulletPool);
 
     }
@@ -66,7 +75,10 @@ public class GameScreen extends Base2DScreen {
             s.update(delta);
         }
         bulletPool.updateActiveSprite(delta);
+        explosionPool.updateActiveSprite(delta);
+        enemyPool.updateActiveSprite(delta);
         mainShip.update(delta);
+        enemyEmitter.generate(delta);
     }
     public void draw(){
         game.getBatch().begin();
@@ -75,6 +87,8 @@ public class GameScreen extends Base2DScreen {
             s.draw(game.getBatch());
         }
         bulletPool.drawActiveSprite(game.getBatch());
+        explosionPool.drawActiveSprite(game.getBatch());
+        enemyPool.drawActiveSprite(game.getBatch());
         mainShip.draw(game.getBatch());
         game.getBatch().end();
     }
@@ -88,7 +102,10 @@ public class GameScreen extends Base2DScreen {
     }
 
     public void deleteAllDestroyed(){
+
         bulletPool.freeDestroyedActiveSprite();
+        explosionPool.freeDestroyedActiveSprite();
+        enemyPool.freeDestroyedActiveSprite();
     }
 
     @Override
@@ -103,9 +120,11 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public void dispose() {
+        enemyPool.dispose();
         mainShip.dispose();
         warMusic.dispose();
         bulletPool.dispose();
+        explosionPool.dispose();
         atlas.dispose();
         fon.dispose();
         super.dispose();
@@ -134,6 +153,8 @@ public class GameScreen extends Base2DScreen {
     public boolean touchDown(Vector2 touch, int pointer) {
         super.touchDown(touch, pointer);
         mainShip.touchDown(touch, pointer);
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(0.15f,touch);
         return false;
     }
 

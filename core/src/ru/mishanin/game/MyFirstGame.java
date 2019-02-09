@@ -38,16 +38,4 @@ public class MyFirstGame extends Game {
 	public void render() {
 		super.render();
 	}
-
-	/**
-	 * Метод используется для задания новой Texture в качестве фона экрана
-	 * *//*
-	public void setBackgroundSprite(Texture texture) {
-		if (texture == null) throw new IllegalArgumentException("texture cannot be null.");
-		this.backgroundSprite.setTexture(texture);
-		this.backgroundSprite.setRegion(0, 0, texture.getWidth(), texture.getHeight());
-		this.backgroundSprite.setColor(1, 1, 1, 1);
-		this.backgroundSprite.setSize(Math.abs(texture.getWidth()), Math.abs(texture.getHeight()));
-		this.backgroundSprite.setOrigin(this.backgroundSprite.getWidth() / 2, this.backgroundSprite.getHeight() / 2);
-	}*/
 }

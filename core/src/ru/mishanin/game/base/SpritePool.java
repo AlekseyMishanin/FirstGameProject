@@ -57,4 +57,13 @@ public abstract class SpritePool<T extends Sprite> {
         activObjects.clear();
         freeObjecks.clear();
     }
+
+    /**Метод переводит все активные объекты в список неактивных*/
+    public void disable(){
+        for (int i = 0; i < activObjects.size(); i++) {
+            T obj = activObjects.get(i);
+            free(obj);
+            i--;
+        }
+    }
 }

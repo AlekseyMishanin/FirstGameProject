@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import ru.mishanin.game.math.RectBody;
 import ru.mishanin.game.pool.BulletPool;
+import ru.mishanin.game.pool.ExplosionPool;
 
 public class MainShip extends Ship {
 
@@ -16,9 +17,7 @@ public class MainShip extends Ship {
     private boolean isTouchRight;                                               //флаг нажатия тача правой стороны
     private boolean isTouchDragged;                                             //флаг нажатия тача и непрерывного движения из стороны в сторону
 
-
-
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(atlas.findRegion("main_ship"),1,2,2);
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         this.bulletPool = bulletPool;
@@ -29,6 +28,7 @@ public class MainShip extends Ship {
         this.damage = 1;
         this.reloadInterval = 0.2f;
         this.hp = 100;
+        this.explosionPool = explosionPool;
     }
 
     @Override
@@ -122,6 +122,25 @@ public class MainShip extends Ship {
             moveLeft();
         }
         return false;
+    }
+
+    public boolean isBulletCollision(RectBody bullet){
+        return !(bullet.getRight() < getLeft()||
+                bullet.getLeft() > getRight()||
+                bullet.getBottom() > getY()||
+                bullet.getTop() < getBottom());
+    }
+
+    @Override
+    public void setDestroyed(boolean isDestroyed) {
+        super.setDestroyed(isDestroyed);
+        if(isDestroyed) {
+            boom();
+            speed.setZero();
+        } else {
+            this.hp = 100;
+            setPos(getWorldBounds().getX(),getY());
+        }
     }
 
     private void moveRight(){
